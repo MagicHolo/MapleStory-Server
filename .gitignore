@@ -86,3 +86,5 @@ nbdist/
 logs/
 wz*/
 scripts*/
+configuration.ini
+world.ini

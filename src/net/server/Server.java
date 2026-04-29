@@ -1082,7 +1082,7 @@ public class Server {
         acceptor.setHandler(new MapleServerHandler());
 
         try {
-            acceptor.bind(new InetSocketAddress(8484));
+            acceptor.bind(new InetSocketAddress(ServerConstants.HOST, 8484));
         } catch (IOException ex) {
             ex.printStackTrace();
         }

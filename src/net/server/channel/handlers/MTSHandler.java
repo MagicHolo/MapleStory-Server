@@ -778,7 +778,8 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
         List<MTSItemInfo> items = new ArrayList<>();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         String listaitems = "";
-        if (cOi != 0) {
+        boolean searchBySeller = (cOi == 0);
+        if (!searchBySeller) {
             List<String> retItems = new ArrayList<>();
             for (Pair<Integer, String> itemPair : ii.getAllItems()) {
                 if (itemPair.getRight().toLowerCase().contains(search.toLowerCase())) {
@@ -793,7 +794,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                 listaitems += " itemid=0 )";
             }
         } else {
-            listaitems = " AND sellername LIKE CONCAT('%','" + search + "', '%')";
+            listaitems = " AND sellername LIKE ?";
         }
         Connection con = null;
         PreparedStatement ps;
@@ -806,13 +807,15 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
             } else {
                 ps = con.prepareStatement("SELECT * FROM mts_items WHERE tab = ? " + listaitems + " AND transfer = 0 ORDER BY id DESC LIMIT ?, 16");
             }
-            ps.setInt(1, tab);
-            if (type != 0) {
-                ps.setInt(2, type);
-                ps.setInt(3, page * 16);
-            } else {
-                ps.setInt(2, page * 16);
+            int idx = 1;
+            ps.setInt(idx++, tab);
+            if (searchBySeller) {
+                ps.setString(idx++, "%" + search + "%");
             }
+            if (type != 0) {
+                ps.setInt(idx++, type);
+            }
+            ps.setInt(idx++, page * 16);
             rs = ps.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("type") != 1) {
@@ -849,9 +852,10 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
             ps.close();
             if (type == 0) {
                 ps = con.prepareStatement("SELECT COUNT(*) FROM mts_items WHERE tab = ? " + listaitems + " AND transfer = 0");
-                ps.setInt(1, tab);
-                if (type != 0) {
-                    ps.setInt(2, type);
+                idx = 1;
+                ps.setInt(idx++, tab);
+                if (searchBySeller) {
+                    ps.setString(idx++, "%" + search + "%");
                 }
                 rs = ps.executeQuery();
                 if (rs.next()) {

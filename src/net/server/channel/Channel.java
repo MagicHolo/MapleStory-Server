@@ -159,7 +159,7 @@ public final class Channel {
             acceptor.setHandler(new MapleServerHandler(world, channel));
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
             acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
-            acceptor.bind(new InetSocketAddress(port));
+            acceptor.bind(new InetSocketAddress(ServerConstants.HOST, port));
 
             ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);
 
