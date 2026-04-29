@@ -82,6 +82,7 @@ nbdist/
 .nb-gradle/
 
 # Custom
+.claude/
 /.history
 logs/
 wz*/
